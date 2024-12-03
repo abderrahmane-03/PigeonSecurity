@@ -19,10 +19,7 @@ public class Season {
     private Long seasonId;
     private Status status;
 
-    @NotBlank(message = "Pigeon IDs cannot be null.")
-    @Size(min = 1, message = "At least one pigeon ID must be provided.")
     @Column(name = "competition_id", nullable = false)
-
     @OneToMany(mappedBy = "season", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Competition> competitions; // Ensure this matches the field in the Competition entity
 }
