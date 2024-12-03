@@ -1,9 +1,12 @@
 package net.yc.race.track.service;
 
+import lombok.RequiredArgsConstructor;
 import net.yc.race.track.model.Pigeon;
 import net.yc.race.track.model.User;
 import net.yc.race.track.repository.PigeonRepository;
 import net.yc.race.track.repository.UserRepository;
+import net.yc.race.track.serviceInf.PdfExportServiceInf;
+import net.yc.race.track.serviceInf.PigeonServiceInf;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -13,14 +16,15 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class PigeonService {
+@RequiredArgsConstructor
+public class PigeonService implements PigeonServiceInf {
 
-    @Autowired
-    private PigeonRepository pigeonRepository;
-    @Autowired
-    private UserRepository userRepository;
 
-    public String savePigeon(Pigeon pigeon, String userId) {
+    private final PigeonRepository pigeonRepository;
+
+    private final UserRepository userRepository;
+
+    public String savePigeon(Pigeon pigeon, Long userId) {
         Optional<User> user = userRepository.findById(userId);
         if (user.isEmpty()) {
             return "Utilisateur non trouvé";
@@ -39,12 +43,12 @@ public class PigeonService {
 
 
 
-    public Optional<Pigeon> findPigeonById(Integer pigeonId){
+    public Optional<Pigeon> findPigeonById(Long pigeonId){
         return pigeonRepository.findById(pigeonId);
     }
 
     // Helper method to generate a unique badge based on color and age
-    private String generateUniqueBadge(Pigeon pigeon) {
+    public String generateUniqueBadge(Pigeon pigeon) {
         String couleur = pigeon.getCouleur();
         if (couleur == null || couleur.length() < 2) {
             throw new IllegalArgumentException("Couleur must be at least 2 characters.");
@@ -56,7 +60,7 @@ public class PigeonService {
         return pigeonRepository.findAll();
     }
 
-    public String deletePigeonById(Integer id) {
+    public String deletePigeonById(Long id) {
         if (pigeonRepository.existsById(id)) {
             pigeonRepository.deleteById(id);
             return "Pigeon supprimé avec succès.";

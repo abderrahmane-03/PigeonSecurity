@@ -1,81 +1,89 @@
 package net.yc.race.track.service;
 
+import lombok.RequiredArgsConstructor;
 import net.yc.race.track.model.*;
 import net.yc.race.track.repository.*;
+import net.yc.race.track.serviceInf.SeasonServiceInf;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
-public class SeasonService {
+@RequiredArgsConstructor
+public class SeasonService implements SeasonServiceInf {
 
-    @Autowired
-    private ResultRepository resultRepository;
-    @Autowired
-    private SeasonRepository seasonRepository;
-    @Autowired
-    private CompetitionRepository competitionRepository;
-    @Autowired
-    private PigeonRepository pigeonRepository;
-    @Autowired
-    private UserRepository userRepository;
+
+    private final ResultRepository resultRepository;
+
+    private final SeasonRepository seasonRepository;
+
+    private final CompetitionRepository competitionRepository;
+
+    private final PigeonRepository pigeonRepository;
+
+    private final UserRepository userRepository;
 
     public Season saveSeason(Season season) {
         return seasonRepository.save(season);
     }
 
-    public Optional<Season> findSeasonById(String id) {
+    public Optional<Season> findSeasonById(Long id) {
         return seasonRepository.findById(id);
     }
 
-    public List<Map<String, Object>> getBreederRankings(String seasonId) {
-        // Fetch competitions for the season
+    public List<Map<String, Object>> getBreederRankings(Long seasonId) {
+        // Fetch competitions for the given season
         List<Competition> competitions = competitionRepository.findBySeasonId(seasonId);
 
         // Map to store total points by user
-        Map<String, Integer> userPointsMap = new HashMap<>();
+        Map<Long, Double> userPointsMap = new HashMap<>();
 
         // Process each competition
         for (Competition competition : competitions) {
-            for (Integer pigeonId : competition.getPigeonId()) {
-                // Fetch pigeon details
-                Optional<Pigeon> pigeonOpt = pigeonRepository.findById(pigeonId);
-                if (pigeonOpt.isPresent()) {
-                    Pigeon pigeon = pigeonOpt.get();
+            for (Pigeon pigeon : competition.getPigeons()) {
+                Long pigeonId = pigeon.getId();
 
-                    // Simulate fetching points for the pigeon from results
-                    int pigeonPoints = resultRepository.getPointsForPigeon(pigeonId);
-
-                    // Add to user's total
-                    userPointsMap.merge(pigeon.getUser_id(), pigeonPoints, Integer::sum);
+                // Fetch points for the pigeon
+                Double pigeonPoints = resultRepository.getPointsForPigeon(pigeonId);
+                if (pigeonPoints == null) {
+                    pigeonPoints = 0.0; // Handle null values
                 }
+
+                // Add points to the user's total
+                userPointsMap.merge(pigeon.getUser().getId(), pigeonPoints, Double::sum);
             }
         }
 
         // Create rankings
         return userPointsMap.entrySet().stream()
-                .sorted(Map.Entry.<String, Integer>comparingByValue().reversed())
+                .sorted(Map.Entry.<Long, Double>comparingByValue().reversed())
                 .map(entry -> {
-                    String userId = entry.getKey();
-                    int totalPoints = entry.getValue();
-                    Optional<User> userOpt = userRepository.findById(userId);
+                    Long userId = entry.getKey();
+                    double totalPoints = entry.getValue();
 
-                    // Prepare the response data for each user
+                    // Fetch user details
+                    Optional<User> userOpt = userRepository.findById(userId);
+                    String username = userOpt.map(User::getUsername).orElse("Unknown");
+
+                    // Prepare response data
                     Map<String, Object> userRanking = new HashMap<>();
                     userRanking.put("userId", userId);
-                    userRanking.put("username", userOpt.map(User::getUsername).orElse("Unknown"));
+                    userRanking.put("username", username);
                     userRanking.put("totalPoints", totalPoints);
+
                     return userRanking;
                 })
                 .collect(Collectors.toList());
     }
 
+
+
     public List<Season> findSeasons() {
         return seasonRepository.findAll();
     }
 
-    public String deleteSeasonById(String id) {
+    public String deleteSeasonById(Long id) {
         if (seasonRepository.existsById(id)) {
             seasonRepository.deleteById(id);
             return "Season supprimé avec succès.";

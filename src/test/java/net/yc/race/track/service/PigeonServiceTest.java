@@ -35,7 +35,7 @@ class PigeonServiceTest {
 
     @Test
     void savePigeon_UserDoesNotExist_ShouldReturnUserNotFound() {
-        String userId = "2";
+        Long userId = (long)2;
         Pigeon pigeon = new Pigeon();
         when(userRepository.findById(userId)).thenReturn(Optional.empty());
 
@@ -53,11 +53,11 @@ class PigeonServiceTest {
     void findPigeons_ShouldReturnAllPigeons() {
 
         Pigeon pigeon1 = new Pigeon();
-        pigeon1.setId(1);
+        pigeon1.setId((long)1);
         pigeon1.setCouleur("Bleu");
 
         Pigeon pigeon2 = new Pigeon();
-        pigeon2.setId(2);
+        pigeon2.setId((long)2);
         pigeon2.setCouleur("Rouge");
 
         List<Pigeon> pigeons = Arrays.asList(pigeon1, pigeon2);
@@ -72,7 +72,7 @@ class PigeonServiceTest {
     }
     @Test
     void savePigeon_InvalidCouleur_ShouldReturnErrorMessage() {
-        String userId = "1";
+        Long userId = (long)1;
         Pigeon pigeon = new Pigeon();
         pigeon.setCouleur(null);
 
@@ -89,7 +89,7 @@ class PigeonServiceTest {
     @Test
     void deletePigeonById_ShouldReturnSuccessMessage_WhenPigeonExists() {
 
-        Integer pigeonId = 1;
+        Long pigeonId = (long)1;
         when(pigeonRepository.existsById(pigeonId)).thenReturn(true);
 
 
@@ -103,7 +103,7 @@ class PigeonServiceTest {
     @Test
     void deletePigeonById_ShouldReturnNotFoundMessage_WhenPigeonDoesNotExist() {
 
-        Integer pigeonId = 2;
+        Long pigeonId = (long)2;
         when(pigeonRepository.existsById(pigeonId)).thenReturn(false);
 
 
@@ -116,7 +116,7 @@ class PigeonServiceTest {
 
     @Test
     void savePigeon_UserExists_ShouldSavePigeon() {
-        String userId = "1";
+        Long userId =(long)1;
         Pigeon pigeon = new Pigeon();
         pigeon.setCouleur("Bleu"); // Ensure a valid couleur is set
 

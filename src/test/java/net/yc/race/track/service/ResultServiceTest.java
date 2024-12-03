@@ -45,13 +45,13 @@ class ResultServiceTest {
     @Test
     void showResult_ShouldReturnTop25PercentResults() {
         // Arrange: create mock data
-        String competitionId = "competition1";
+        Long competitionId = (long)1;
 
 
-        Result result1 = new Result(1, 0, "Loft A", "badge1", new Date(), 100.0, 80.0,0.0,1.2, competitionId);
-        Result result2 = new Result(2, 0, "Loft B", "badge2", new Date(), 150.0, 90.0, 0.0,1.2, competitionId);
-        Result result3 = new Result(3, 0, "Loft C", "badge3", new Date(), 120.0, 85.0, 0.0,1.2, competitionId);
-        Result result4 = new Result(4, 0, "Loft D", "badge4", new Date(), 130.0, 70.0, 0.0, 1.2,competitionId);
+        Result result1 = new Result((long)1, 0, "Loft A", "badge1", new Date(), 100.0, 80.0,0.0,1.2, competitionId);
+        Result result2 = new Result((long)2, 0, "Loft B", "badge2", new Date(), 150.0, 90.0, 0.0,1.2, competitionId);
+        Result result3 = new Result((long)3, 0, "Loft C", "badge3", new Date(), 120.0, 85.0, 0.0,1.2, competitionId);
+        Result result4 = new Result((long)4, 0, "Loft D", "badge4", new Date(), 130.0, 70.0, 0.0, 1.2,competitionId);
 
         List<Result> allResults = new ArrayList<>();
         allResults.add(result1);
@@ -90,7 +90,7 @@ class ResultServiceTest {
     @Test
     void showResult_ShouldHandleNoResults() {
         // Arrange: no results
-        String competitionId = "competition2";
+        Long competitionId = (long)2;
         List<Result> allResults = new ArrayList<>();
 
         // Mock the repository call
@@ -110,9 +110,9 @@ class ResultServiceTest {
     @Test
     void showResult_ShouldHandleSingleResult() {
         // Arrange: only one result
-        String competitionId = "competition3";
+        Long competitionId = (long)3;
 
-        Result result1 = new Result(1, 0, "Loft A", "badge1", new Date(), 100.0, 80.0, 0.0, 1.2,competitionId);
+        Result result1 = new Result((long)1, 0, "Loft A", "badge1", new Date(), 100.0, 80.0, 0.0, 1.2,competitionId);
 
 
         List<Result> allResults = new ArrayList<>();
@@ -137,7 +137,7 @@ class ResultServiceTest {
     @Test
     void saveResult_ShouldSaveResult_WhenCompetitionAndUserAreValid() {
         // Arrange
-        String competitionId = "competition1";
+        Long competitionId = (long)1;
         String loftName = "Loft A";
 
         Competition competition = new Competition();
@@ -203,7 +203,7 @@ class ResultServiceTest {
     @Test
     void saveResult_ShouldReturnError_WhenCompetitionOrUserNotFound() {
         // Arrange
-        String competitionId = "competition1";
+        Long competitionId = (long)1;
         String loftName = "Loft A";
 
         Result result = new Result();

@@ -3,12 +3,14 @@ package net.yc.race.track.service;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 
+import lombok.RequiredArgsConstructor;
 import net.yc.race.track.model.Competition;
 import net.yc.race.track.model.Result;
 import net.yc.race.track.model.User;
 import net.yc.race.track.repository.CompetitionRepository;
 import net.yc.race.track.repository.ResultRepository;
 import net.yc.race.track.repository.UserRepository;
+import net.yc.race.track.serviceInf.ResultServiceInf;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -19,24 +21,25 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class ResultService {
-
-    @Autowired
-    private ResultRepository resultRepository;
-
-    @Autowired
-    private CompetitionRepository competitionRepository;
+@RequiredArgsConstructor
+public class ResultService implements ResultServiceInf {
 
 
-    @Autowired
-    private UserRepository userRepository;
+    private final ResultRepository resultRepository;
 
-        @Autowired
-        private PdfExportService pdfExportService;
+
+    private final CompetitionRepository competitionRepository;
+
+
+
+    private final UserRepository userRepository;
+
+
+    private final PdfExportService pdfExportService;
  
 
 
-    public List<Result> showResult(String competitionId) {
+    public List<Result> showResult(Long competitionId) {
         // Fetch all results for the competition
         List<Result> results = resultRepository.findAllByCompetitionId(competitionId,Sort.by(Sort.Order.desc("speed")));
 
@@ -88,16 +91,16 @@ public class ResultService {
 
 
     public String saveResult(Result result) {
-        Optional<Competition> competitionOpt = competitionRepository.findById(result.getCompetitionId());
-        Optional<User> userOpt = userRepository.findByLoftName(result.getLoftName());
+        // Fetch Competition and User based on relationships
+        Competition competition = result.getCompetition(); // Use the `Competition` object directly
+        User user = userRepository.findByLoftName(result.getLoftName()).orElse(null);
 
-        if (competitionOpt.isPresent() && userOpt.isPresent()) {
-            Competition competition = competitionOpt.get();
-            User user = userOpt.get();
-
+        if (competition != null && user != null) {
+            // Ensure both competition and user have GPS coordinates
             if (competition.getCoordinatesGPS() == null || user.getGpsCoordinates() == null) {
                 return "GPS coordinates for competition or user are missing.";
             }
+
             // Calculate competition end time by adding delay to start time
             Instant startTime = competition.getStartDateTime().toInstant();
             Instant delayDuration = competition.getDelayDuration().toInstant();
@@ -121,7 +124,7 @@ public class ResultService {
             long timeElapsedMinutes = Duration.between(startTime, arriveHour.toInstant()).toMinutes();
 
             // Calculate speed in m/min
-            result.setSpeed(timeElapsedMinutes > 0 ? distance*1000 / timeElapsedMinutes : 0);
+            result.setSpeed(timeElapsedMinutes > 0 ? (distance * 1000) / timeElapsedMinutes : 0);
 
             // Save result
             resultRepository.save(result);
@@ -130,6 +133,7 @@ public class ResultService {
             return "Competition or User not found.";
         }
     }
+
 
     public double calculateDistance(String gps1, String gps2) {
         String[] coordinates1 = gps1.split(",");
@@ -157,7 +161,7 @@ public class ResultService {
     }
 
 
-    public String deleteResultById(Integer id) {
+    public String deleteResultById(Long id) {
         if (resultRepository.existsById(id)) {
             resultRepository.deleteById(id);
             return "Result supprimé avec succès.";
@@ -166,7 +170,7 @@ public class ResultService {
         }
     }
 
-    public String exportResultsToPdf(String competitionId, String outputPath) {
+    public String exportResultsToPdf(Long competitionId, String outputPath) {
         // Fetch competition results, sorted by speed in descending order
         List<Result> results = resultRepository.findAllByCompetitionId(competitionId, Sort.by(Sort.Order.desc("speed")));
 

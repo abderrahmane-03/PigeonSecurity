@@ -1,20 +1,29 @@
 package net.yc.race.track.model;
 
-import lombok.Data;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+import lombok.*;
 import net.yc.race.track.Enum.Status;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
 
-@Document(collection = "seasons")
+import java.util.List;
+
+@Entity
+@Table(name = "seasons")
 @Data
+@AllArgsConstructor
 @NoArgsConstructor
-@Getter
-@Setter
 public class Season {
     @Id
-    private String seasonId;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long seasonId;
     private Status status;
+
+    @NotBlank(message = "Pigeon IDs cannot be null.")
+    @Size(min = 1, message = "At least one pigeon ID must be provided.")
+    @Column(name = "competition_id", nullable = false)
+
+    @OneToMany(mappedBy = "season", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Competition> competitions; // Ensure this matches the field in the Competition entity
 }
+

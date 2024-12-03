@@ -2,6 +2,7 @@ package net.yc.race.track.service;
 
 import com.itextpdf.text.*;
 import com.itextpdf.text.pdf.*;
+import net.yc.race.track.serviceInf.PdfExportServiceInf;
 import org.springframework.stereotype.Service;
 import net.yc.race.track.model.Result;
 
@@ -10,7 +11,8 @@ import java.io.IOException;
 import java.util.List;
 
 @Service
-public class PdfExportService {
+
+public class PdfExportService implements PdfExportServiceInf {
 
     public void exportResultsToPdf(List<Result> results, String outputPath) throws DocumentException, IOException {
         // Création du document PDF

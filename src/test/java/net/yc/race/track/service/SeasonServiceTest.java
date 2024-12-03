@@ -32,7 +32,7 @@ class SeasonServiceTest {
     void saveSeason_ShouldReturnSavedSeason() {
 
         Season season = new Season();
-        season.setSeasonId("1");
+        season.setSeasonId((long)1);
         season.setStatus(Status.NOT_YET);
 
         when(seasonRepository.save(season)).thenReturn(season);
@@ -50,11 +50,11 @@ class SeasonServiceTest {
     void findSeasons_ShouldReturnListOfSeasons() {
         // Arrange
         Season season1 = new Season();
-        season1.setSeasonId("1");
+        season1.setSeasonId((long)1);
         season1.setStatus(Status.NOT_YET);
 
         Season season2 = new Season();
-        season2.setSeasonId("2");
+        season2.setSeasonId((long)2);
         season2.setStatus(Status.DONE);
 
         List<Season> seasons = Arrays.asList(season1, season2);
@@ -76,7 +76,7 @@ class SeasonServiceTest {
     @Test
     void deleteSeasonById_ShouldReturnSuccessMessage_WhenSeasonExists() {
 
-        String seasonId = "1";
+        Long seasonId = (long)1;
 
 
         when(seasonRepository.existsById(seasonId)).thenReturn(true);
@@ -93,7 +93,7 @@ class SeasonServiceTest {
     @Test
     void deleteSeasonById_ShouldReturnNotFoundMessage_WhenSeasonDoesNotExist() {
 
-        String seasonId = "2";
+        Long seasonId = (long)2;
 
 
         when(seasonRepository.existsById(seasonId)).thenReturn(false);
