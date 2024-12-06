@@ -12,7 +12,7 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/pigeons")
+@RequestMapping("/breeder/pigeons")
 public class PigeonController {
 
     private final PigeonServiceInf pigeonService;

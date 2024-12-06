@@ -15,7 +15,7 @@ import java.util.Optional;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/seasons")
+@RequestMapping("/admin/seasons")
 public class SeasonController {
 
 

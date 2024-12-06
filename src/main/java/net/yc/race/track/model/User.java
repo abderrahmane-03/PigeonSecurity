@@ -2,8 +2,8 @@ package net.yc.race.track.model;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.*;
-import org.springframework.data.annotation.Id;
-
+import net.yc.race.track.Enum.RoleEnum;
+import jakarta.persistence.Id;
 import java.util.List;
 
 @Entity
@@ -12,7 +12,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class User {
-    @jakarta.persistence.Id
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -27,12 +27,11 @@ public class User {
     @Column(nullable = false)
     private String password;
 
-    @NotBlank(message = "Loft name cannot be blank.")
+
     @Size(max = 100, message = "Loft name cannot exceed 100 characters.")
     @Column(nullable = false)
     private String loftName;
 
-    @NotBlank(message = "GPS coordinates cannot be blank.")
     @Pattern(
             regexp = "^[-+]?\\d{1,2}\\.\\d+,[-+]?\\d{1,3}\\.\\d+$",
             message = "GPS coordinates must be in the format 'latitude,longitude'."
@@ -43,4 +42,7 @@ public class User {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "user", fetch = FetchType.LAZY)
     private List<Pigeon> Pigeons;
 
+    @Enumerated(EnumType.STRING)
+    @NotNull(message = "Role must not be null")
+    private RoleEnum role;
 }

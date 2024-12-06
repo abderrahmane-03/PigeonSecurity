@@ -2,12 +2,14 @@ package net.yc.race.track.DTO.ResponseDTO;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import net.yc.race.track.DTO.EmbededDTO.PigeonEmbeded;
+import net.yc.race.track.Enum.RoleEnum;
 import net.yc.race.track.model.Pigeon;
 import net.yc.race.track.model.Result;
 import org.springframework.data.annotation.Id;
@@ -35,6 +37,10 @@ public class UserResponse {
     )
     @Column(nullable = false)
     private String gpsCoordinates;
+
+    @NotNull(message = "Role must not be null")
+    @Column(nullable = false)
+    private RoleEnum role;
 
     private List<PigeonEmbeded> pigeons;
 

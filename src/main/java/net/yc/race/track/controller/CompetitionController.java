@@ -16,7 +16,7 @@ import java.util.Optional;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/competition")
+@RequestMapping("/organizer/competition")
 public class CompetitionController {
 
 

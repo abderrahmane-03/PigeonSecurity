@@ -1,44 +1,35 @@
 package net.yc.race.track.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import net.yc.race.track.DTO.RequestDTO.UserRequest;
+import net.yc.race.track.DTO.ResponseDTO.UserResponse;
+import net.yc.race.track.Enum.RoleEnum;
+import net.yc.race.track.mapper.UserMapper;
+import net.yc.race.track.model.Season;
 import net.yc.race.track.model.User;
 import net.yc.race.track.service.UserService;
-import net.yc.race.track.serviceInf.UserServiceInf;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Map;
-import java.util.Optional;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/auth")
-
+@RequestMapping("/public")
 public class AuthController {
 
-    private final UserServiceInf userServiceinf;
+    private final UserMapper userMapper;
+    private final UserService userService;
+    private final AuthenticationManager authenticationManager;
 
     @PostMapping("/register")
-    public ResponseEntity<String> register(@RequestBody User user) {
-        userServiceinf.registerUser(user);
+    public ResponseEntity<String> register(@Valid @RequestBody UserRequest userRequest) {
+
+
+        userService.registerUser(
+                userRequest
+        );
         return ResponseEntity.ok("User registered successfully");
     }
-
-    @PostMapping("/login")
-    public ResponseEntity<?> loginUser(@RequestBody Map<String, String> loginRequest) {
-        String username = loginRequest.get("username");
-        String password = loginRequest.get("password");
-
-        Optional<User> user = userServiceinf.authenticate(username, password);
-
-        if (user.isPresent()) {
-            return ResponseEntity.ok("Login successful");
-        } else {
-            return ResponseEntity.status(401).body("Invalid username or password");
-        }
-    }
-
-
 
 }
