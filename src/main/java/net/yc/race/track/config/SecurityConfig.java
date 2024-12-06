@@ -31,11 +31,13 @@ public class SecurityConfig {
                         .requestMatchers("/organizer/**").hasRole("ORGANIZER")
                         .anyRequest().authenticated()
                 )
+                .exceptionHandling(exceptionHandling -> exceptionHandling
+                        .accessDeniedHandler(new CustomAccessDeniedHandler())
+                )
                 .httpBasic(Customizer.withDefaults());
 
         return http.build();
     }
-
 
     @Bean
     public AuthenticationManager authManager(HttpSecurity http) throws Exception {

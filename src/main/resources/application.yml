@@ -2,6 +2,11 @@ spring:
   application:
     name: pigeon
 
+  profiles:
+    active: test
+  main:
+    allow-bean-definition-overriding: true
+
   datasource:
     url: jdbc:postgresql://localhost:5432/pigeon
     username: postgres

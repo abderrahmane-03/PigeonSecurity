@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import net.yc.race.track.DTO.RequestDTO.UserRequest;
 import net.yc.race.track.DTO.ResponseDTO.UserResponse;
 import net.yc.race.track.Enum.RoleEnum;
+import net.yc.race.track.exceptions.UsernameAlreadyExistsException;
 import net.yc.race.track.mapper.UserMapper;
 import net.yc.race.track.model.User;
 import net.yc.race.track.repository.UserRepository;
@@ -16,31 +17,22 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Service
 public class UserService implements UserServiceInf {
-
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
 
-
     public UserResponse registerUser(UserRequest userRequest) {
-        Optional<User> byUsername = userRepository.findByUsername(userRequest.getUsername());
-
-        if (byUsername.isPresent()){
-            throw new IllegalArgumentException("this username already exist.");
+        Optional<User> existingUser = userRepository.findByUsername(userRequest.getUsername());
+        if (existingUser.isPresent()) {
+            throw new UsernameAlreadyExistsException("Username '" + userRequest.getUsername() + "' already exists.");
         }
-        if (userRequest.getRole() == RoleEnum.ROLE_BREEDER) {
 
-            if (userRequest.getLoftName() == null || userRequest.getLoftName().isBlank()) {
-                throw new IllegalArgumentException("Loft name is required for Breeders.");
-            }
-            if (userRequest.getGpsCoordinates() == null || userRequest.getGpsCoordinates().isBlank()) {
-                throw new IllegalArgumentException("GPS coordinates are required for Breeders.");
-            }
-        }
+        userRequest.setRole(RoleEnum.ROLE_BREEDER);
         User user = userMapper.toEntityD(userRequest);
         user.setPassword(passwordEncoder.encode(userRequest.getPassword()));
         User savedUser = userRepository.save(user);
         return userMapper.toResponseDTO(savedUser);
+
 
 //        User user = new User();
 //        user.setUsername(userRequest.getUsername());
@@ -51,11 +43,13 @@ public class UserService implements UserServiceInf {
 
     }
 
-    public void changeRole(Long userId,RoleEnum roleEnum){
-        Optional<User> byId = userRepository.findById(userId);
-        if(byId.isPresent()){
-         byId.orElse(new User()).setRole(roleEnum);
-        }
+    @Override
+    public void changeRole(Long userId, RoleEnum roleEnum) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found with ID: " + userId));
+
+        user.setRole(roleEnum);
+        userRepository.save(user);
     }
 
     public Optional<User> authenticate(String username, String password) {

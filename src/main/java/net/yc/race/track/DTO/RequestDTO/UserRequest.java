@@ -39,8 +39,6 @@ public class UserRequest {
     @Column(nullable = true)
     private String gpsCoordinates;
 
-
-    @NotNull(message = "Role must not be null")
     @Column(nullable = false)
     private RoleEnum role;
 

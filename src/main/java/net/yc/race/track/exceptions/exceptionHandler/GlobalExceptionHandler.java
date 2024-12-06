@@ -1,5 +1,6 @@
 package net.yc.race.track.exceptions.exceptionHandler;
 
+import net.yc.race.track.DTO.ResponseDTO.ErrorResponse;
 import net.yc.race.track.exceptions.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +15,18 @@ import java.util.Map;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
+    @ExceptionHandler(UsernameAlreadyExistsException.class)
+    public ResponseEntity<ErrorResponse> handleUsernameAlreadyExistsException(UsernameAlreadyExistsException ex) {
+        ErrorResponse errorDto = new ErrorResponse("USERNAME_ALREADY_EXISTS", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(errorDto);
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ErrorResponse> handleAccessDeniedException(AccessDeniedException ex) {
+        ErrorResponse errorDto = new ErrorResponse("ACCESS_DENIED", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorDto);
+    }
+
     @ExceptionHandler(PigeonNotFoundException.class)
     public ResponseEntity<String> handlePigeonNotFoundException(PigeonNotFoundException ex) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
@@ -27,10 +40,6 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(SeasonNotFoundException.class)
     public ResponseEntity<String> handleSeasonNotFoundException(SeasonNotFoundException ex) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
-    }
-    @ExceptionHandler(AccessDeniedException.class)
-    public ResponseEntity<String> handleAccessDeniedException(AccessDeniedException ex) {
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Access Denied: " + ex.getMessage());
     }
 
     @ExceptionHandler(RuntimeException.class)

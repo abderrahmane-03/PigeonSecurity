@@ -18,19 +18,20 @@ import java.util.Optional;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/admin/Roles")
+@RequestMapping("/admin/roles")
 public class RoleController {
 
 
     private final UserServiceInf userService;
     @PostMapping("/changeToOrganizer/{id}")
-    public ResponseEntity<String> changeToOrganizer(@Valid @RequestParam Long userId) {
-        userService.changeRole(userId, RoleEnum.ROLE_ORGANIZER);
+    public ResponseEntity<String> changeToOrganizer(@PathVariable Long id) {
+        userService.changeRole(id, RoleEnum.ROLE_ORGANIZER);
         return ResponseEntity.ok("User role changed successfully");
     }
     @PostMapping("/changeToAdmin/{id}")
-    public ResponseEntity<String> changeToAdmin(@Valid @RequestParam Long userId) {
-        userService.changeRole(userId, RoleEnum.ROLE_ADMIN);
+    public ResponseEntity<String> changeToAdmin(@PathVariable Long id) {
+        userService.changeRole(id, RoleEnum.ROLE_ADMIN);
         return ResponseEntity.ok("User role changed successfully");
     }
+
 }
