@@ -26,13 +26,13 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
         var userDetails = userDetailsService.loadUserByUsername(username);
         System.out.println("Loaded user: " + userDetails.getUsername());
 
-//        if (passwordEncoder.matches(password, userDetails.getPassword())) {
-//
+        if (passwordEncoder.matches(password, userDetails.getPassword())) {
+
             return new UsernamePasswordAuthenticationToken(userDetails, password, userDetails.getAuthorities());
-//        }
-//
-//        System.out.println("Password mismatch");
-//        throw new RuntimeException("Invalid credentials");
+        }
+
+        System.out.println("Password mismatch");
+        throw new RuntimeException("Invalid credentials");
     }
 
 
